@@ -1,0 +1,148 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" xmlns:tj="http://www.thymeleaf.org"
+      layout:decorate="~{layouts/layout1}">
+<head>
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+
+            function comment(){
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                $(document).ajaxSend(function (e, xhr, options) {
+                    xhr.setRequestHeader(header, token);
+                });
+
+                var sendForm = {
+                    content: $('#newReplyText').val(),
+                    contactNum: $('#contactNum').val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/comment",
+                    data: sendForm,
+                    success: function (data) {
+                        location.reload();
+                    },
+                    error: function (request, status, error) {
+                        alert(request.status + request.responseText +error);
+                    }
+                });
+            }
+
+            function confirm() {
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                $(document).ajaxSend(function (e, xhr, options) {
+                    xhr.setRequestHeader(header, token);
+                });
+
+                var sendForm = {
+                    email: $('#sendEmail').val(),
+                    password: $('#sendPassword').val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/members/new",
+                    data: sendForm,
+                    success: function (data) {
+                        alert("Confirmed.");
+                    },
+                    error: function () {
+                        alert("This E-mail is already in use.");
+                    }
+                });
+            }
+
+            function send() {
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                $(document).ajaxSend(function (e, xhr, options) {
+                    xhr.setRequestHeader(header, token);
+                });
+
+                var sendForm = {
+                    email: $('#sendEmail').val(),
+                    password: $('#sendPassword').val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/email",
+                    data: sendForm,
+                    success: function (data) {
+                        alert("E-mail sent.");
+                    },
+                    error: function () {
+                        alert("Something went wrong...");
+                    }
+                });
+            }
+        </script>
+    </th:block>
+    <th:block layout:fragment="css">
+        <style>
+            td {
+                color: white !important;
+            width: 50%;
+        }
+        li{
+            margin: 0 0 0 20px;
+        }
+        </style>
+    </th:block>
+</head>
+<body>
+<div layout:fragment="content" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <div class="container">
+        <table class="table">
+            <tr style="text-align: right;">
+                <td style="border: none">
+                    <input type="hidden" th:value="${contact.email}" id="sendEmail">
+                    <input type="hidden" th:value="${randomPassword}" id="sendPassword">
+                    <input type="hidden" th:value="${case}" id="contactNum">
+                    <a href="javascript:history.back()">
+                        <li class="fa fa-lg fa-undo"></li>
+                    </a>
+                    <a href="javascript:send()">
+                        <li class="fa fa-lg fa-envelope"></li>
+                    </a>
+                    <a href="javascript:confirm()">
+                        <li class="fa fa-lg fa-check-circle"></li>
+                    </a></td>
+            </tr>
+            <tr>
+                <td th:text="${contact.name}"></td>
+            </tr>
+            <tr>
+                <td th:text="${contact.subject}"></td>
+            </tr>
+            <tr>
+                <td th:text="${contact.message}"></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="newReplyText">Comment</label>
+                    <a href="javascript:comment()"><li class="fa fa-lg fa-share pull-right"></li></a>
+                    <input class="form-control" id="newReplyText" name="replyText" placeholder="Comment" onkeypress="if(event.keyCode==13) comment()">
+                </td>
+            </tr>
+        </table>
+        <div style="border: none" th:each="comment : ${comments}">
+            <text style="margin-left:2%; font-weight: bold; font-style: italic;"
+                  th:text="${comment.getUsername()} + ' said...'"></text>
+            <text style="margin-left: 5%" th:text="${comment.getContent()}"></text>
+        </div>
+    </div>
+</div>
+</body>
+</html>

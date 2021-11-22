@@ -1,0 +1,108 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+        $(document).ready(function(){
+            $("#searchBtn").on("click", function (e) {
+                e.preventDefault();
+                page(0);
+            });
+        });
+
+        function page(page) {
+            var searchBy = $("#searchBy").val();
+            var searchQuery = $("#searchQuery").val();
+
+            location.href="/admin/requests/" + page + "?searchBy="
+                + searchBy + "&searchQuery=" + searchQuery;
+        }
+
+        function detail(id){
+            location.href="/admin/requests/case=" + id;
+        }
+
+    </script>
+</th:block>
+<th:block layout:fragment="css">
+    <style>
+        .txt:hover{
+            text-decoration: underline;
+        }
+        td{
+            color: white !important;
+        }
+    </style>
+</th:block>
+<body>
+<div layout:fragment="content" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <form th:action="@{'/admin/requests/' + ${contacts.number}}" role="form" method="get" th:object="${contacts}">
+        <table class="table">
+            <thead>
+            <tr style="text-align: right;">
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td style="border: none">
+                    <a href="/">
+                        <li class="fa fa-lg fa-undo"></li>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>E-mail</td>
+                <td>Subject</td>
+                <td>Date</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="contact, status: ${contacts.getContent()}">
+                <td th:text="${contact.name}"></td>
+                <td th:text="${contact.email}"></td>
+                <td class="txt" style="cursor: pointer;" th:onclick="'javasript:detail(' + ${contact.id} + ')'" th:text="${contact.subject}"></td>
+                <td th:text="${#strings.substring(contact.createTimestamp,0,10)}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:with="start=${(contacts.number/maxPage)*maxPage + 1},
+        end=(${(contacts.totalPages == 0) ? 1 : (start + (maxPage - 1)
+        < contacts.totalPages ? start + (maxPage - 1) : contacts.totalPages)})">
+            <ul class="pagination justify-content-center">
+
+                <li class="page-item" th:classappend="${contacts.first}?'disabled'">
+                    <a th:onclick="'javasript:page(' + ${contacts.number - 1} + ')'" aria-label='Previous'
+                       class="page-link">
+                        <span aria-hidden='true'>Prev</span>
+                    </a>
+                </li>
+
+                <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
+                    th:classappend="${contacts.number eq page -1}?'active':''">
+                    <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                </li>
+
+                <li class="page-item" th:classappend="${contacts.last}?'disabled'">
+                    <a th:onclick="'javascript:page(' + ${contacts.number + 1} + ')'" aria-label='Next' class="page-link">
+                        <span aria-hidden='true'>Next</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="form-inline justify-content-center" th:object="${contactSearchDto}">
+            <select style="margin-right: 10px" th:field="*{searchBy}" class="form-control">
+                <option style="background-color: #495057" value="name">Name</option>
+                <option style="background-color: #495057" value="message">Message</option>
+            </select>
+            <input th:field="*{searchQuery}" type="text" class="form-control">
+            <button style="margin-top: 20px; margin-left: 10px" id="searchBtn" type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<!--    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>-->
+<!--    &lt;!&ndash; default header name is X-CSRF-TOKEN &ndash;&gt;-->
+<!--    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>-->
+<!--    <th:block layout:fragment="script">-->
+<!--        <script th:inline="javascript">-->
+
+<!--            function shred() {-->
+<!--                var token = $("meta[name='_csrf']").attr("content");-->
+<!--                var header = $("meta[name='_csrf_header']").attr("content");-->
+
+<!--                $(document).ajaxSend(function (e, xhr, options) {-->
+<!--                    xhr.setRequestHeader(header, token);-->
+<!--                });-->
+
+<!--                var sendForm = {-->
+<!--                    email: $('#shredEmail').val()-->
+<!--                };-->
+
+<!--                $.ajax({-->
+<!--                    type: "POST",-->
+<!--                    url: "/admin/shred",-->
+<!--                    data: sendForm,-->
+<!--                    success: function (data) {-->
+<!--                        location.reload();-->
+<!--                    },-->
+<!--                    error: function (request, status, error) {-->
+<!--                        alert(request.status + request.responseText + error);-->
+<!--                    }-->
+<!--                });-->
+<!--            }-->
+<!--        </script>-->
+<!--    </th:block>-->
+</head>
+<body>
+<div th:fragment="modal" class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <!-- Login Form -->
+            <form role="form">
+                <div class="modal-header">
+                    <h4 style="font-weight: bold" class="modal-title">Shred Alert</h4>
+                    <a href="" data-bs-dismiss="modal"><li style="color: black" type="button" class="fa fa-times" aria-label="Close"></li></a>
+                </div>
+                <div class="modal-body">
+                    <h5 class="mb-2 text-center">Are you sure want to shred this account?<br>
+                        All of data and information will be deleted.</h5>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <a href="javascript:shred()">
+                        <button type="button" class="btn btn-primary">SHRED</button>
+                    </a>
+                </div>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

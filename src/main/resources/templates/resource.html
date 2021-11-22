@@ -1,0 +1,83 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<head>
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+
+            function shred(){
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                $(document).ajaxSend(function (e, xhr, options) {
+                    xhr.setRequestHeader(header, token);
+                });
+
+                var sendForm = {
+                    email: $('#shredEmail').val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/shred",
+                    data: sendForm,
+                    success: function (data) {
+                        location.reload();
+                    },
+                    error: function (request, status, error) {
+                        alert(request.status + request.responseText +error);
+                    }
+                });
+            }
+        </script>
+    </th:block>
+<th:block layout:fragment="css">
+    <style>
+        .txt:hover{
+            text-decoration: underline;
+        }
+        td{
+            color: white !important;
+        }
+    </style>
+</th:block>
+</head>
+<body>
+<div layout:fragment="content" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <th:block th:replace="modal">modal</th:block>
+    <form>
+        <table class="table">
+            <thead>
+            <tr style="text-align: right;">
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td style="border: none">
+                    <a href="/">
+                        <li class="fa fa-lg fa-undo"></li>
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td>E-mail</td>
+                <td>Created</td>
+                <td>Shred</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <input type="hidden" id="shredEmail" th:value="${user.email}">
+                <td th:text="${user.email}"></td>
+                <td th:text="${#strings.substring(user.createTimestamp,0,10)}"></td>
+                <td><a href="#" data-toggle="modal" data-target="#exampleModal1"><li style="margin-left: 25%;" class="fa fa-lg fa-user-times"></li></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+        function detail(id){
+            location.href="/members/requests/case=" + id;
+        }
+
+    </script>
+</th:block>
+<th:block layout:fragment="css">
+    <style>
+        .txt:hover{
+            text-decoration: underline;
+        }
+        td{
+            color: white !important;
+        }
+    </style>
+</th:block>
+<body>
+<div layout:fragment="content" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <form>
+        <table class="table">
+            <thead>
+            <tr style="text-align: right;">
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td style="border: none"></td>
+                <td style="border: none">
+                <a href="/">
+                    <li class="fa fa-lg fa-undo"></li>
+                </a>
+                </td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>E-mail</td>
+                <td>Subject</td>
+                <td>Date</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="contact : ${contacts}">
+                <td th:text="${contact.name}"></td>
+                <td th:text="${contact.email}"></td>
+                <td class="txt" style="cursor: pointer;" th:onclick="'javasript:detail(' + ${contact.id} + ')'" th:text="${contact.subject}"></td>
+                <td th:text="${#strings.substring(contact.createTimestamp,0,10)}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+</body>
+</html>
