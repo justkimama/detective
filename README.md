@@ -1,3 +1,3 @@
 # detective
 
-Detective case concept site on Spring Boot web application.
+Detective case concept website on Spring Boot web application.
